@@ -52,6 +52,7 @@ public class UporabnikController {
             log.info("Received payload: " + dto.toString());
 
             Uporabnik uporabnik = new Uporabnik(dto);
+            log.info("Uporabnik: " + uporabnik.toString());
             uporabnikRepository.persist(uporabnik);
 
             log.info("User created successfully");
