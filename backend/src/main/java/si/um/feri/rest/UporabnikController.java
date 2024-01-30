@@ -8,6 +8,8 @@ import jakarta.ws.rs.core.Response;
 import si.um.feri.dao.UporabnikRepository;
 import si.um.feri.dto.UporabnikDTO;
 import si.um.feri.vao.Uporabnik;
+import javax.ws.rs.core.HttpHeaders;
+import io.vertx.ext.web.RoutingContext;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -43,11 +45,23 @@ public class UporabnikController {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response postuporabnik(UporabnikDTO dto) {
-        Uporabnik uporabnik = new Uporabnik(dto);
-        uporabnikRepository.persist(uporabnik);
-        return Response.ok(uporabnik.toDto()).status(Response.Status.CREATED).build();
+        try {
+            log.info("Received payload: " + dto.toString());
+
+            Uporabnik uporabnik = new Uporabnik(dto);
+            uporabnikRepository.persist(uporabnik);
+
+            log.info("User created successfully");
+
+            return Response.ok(uporabnik.toDto()).status(Response.Status.CREATED).build();
+        } catch (Exception e) {
+            log.severe("Error while processing the request: " + e.getMessage());
+            e.printStackTrace();  // log the stack trace for detailed debugging
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing the request").build();
+        }
     }
 
     @PUT
